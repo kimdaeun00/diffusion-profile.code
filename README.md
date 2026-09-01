@@ -53,7 +53,16 @@ dropped and the summary is `summary.json`.
 | `<model>_compile-default_r<res>.ncu.log` | stdout/stderr of the driver process under ncu — look here when a resolution failed | 1 per model × resolution |
 | `summary_compile-default.json` | everything merged: `gpu`, `date`, `models → [records]`; each record has the latency fields plus `ncu` = duration-weighted Compute / DRAM / Tensor % of peak, GB/s, launch count, kernel ms and the GEMM / attention / elementwise / norm split (`null` where no ncu was run or the shape OOMed) | 1 |
 
-Optional: `--save-images` adds `<model>_compile-default_r<res>_b<batch>.png` (one image per shape).
-
 To report a run from another machine, send `summary_compile-default.json`, the two
 `*_latency.json` and the six `*.csv`; the `.ncu-rep` files are optional.
+
+## 4. Summarise
+
+```bash
+python summarize_profile.py results/profile --md results/profile/REPORT.md --csv results/profile/table.csv
+```
+
+No GPU needed. Per model a latency table (res × batch: total / text / transformer / VAE ms,
+peak GB) and, per profiled forward, the top 3 kernels with their own Compute % / DRAM % /
+GB/s (`--top N` to change). 
+
